@@ -26,7 +26,7 @@ Welcome to **Swamp**, a dynamic chatroom platform that combines live video feeds
 ### Team Behind the Product  
 - **Arjun Kaliyath**: Front-End Developer  
   - Expert in crafting sleek and user-friendly interfaces.  
-  - Focused on delivering a seamless user experience for ClubConnect.  
+  - Focused on delivering a seamless user experience for Swamp.  
 
 - **Hari Nair**: Front-End Developer  
   - Specializes in interactive designs and responsive layouts.  
