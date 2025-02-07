@@ -15,7 +15,6 @@ const Login = () => {
 
   const handleLogin = (e) => {
     e.preventDefault();
-    // This is where you'll add your authentication logic later
     dispatch(setUser({ 
       id: '1', 
       email: email,
