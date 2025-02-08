@@ -1,39 +1,43 @@
 package main
 
 import (
-    "log"
-    "net/http"
+	"log"
+	"net/http"
 
-    "swamp/database"
-    "swamp/handlers"
-    "swamp/models"
-
-    "github.com/go-chi/chi/v5"
-    "github.com/go-chi/chi/v5/middleware"
+	"swamp/database"
+	
+	"swamp/models"
+    "swamp/routers"
+	"gorm.io/gorm"
 )
 
-func main() {
-    r := chi.NewRouter()
-    
-    // Middleware
-    r.Use(middleware.Logger)
-    r.Use(middleware.Recoverer)
 
-    // Database setup
+var db *gorm.DB
+
+func setupDatabase() *gorm.DB{
     db, err := database.ConnectDB()
     if err != nil {
         log.Fatal("Database connection failed:", err)
     }
     
+    // Ensuring I am able to create a user.
+    user := models.User{Username: "Dobra"}
+	result := db.Create(&user)
+    
+    if result.Error != nil {
+		log.Fatalf("Failed to create user: %v", result.Error)
+	}
+
     // AutoMigrate models
-    db.AutoMigrate(&models.Swamp{})
+    db.AutoMigrate(&models.User{})
+    return db 
+}
 
-    // Routes
-    r.Get("/ws", handlers.WSHandler)
-    r.Get("/videos", func(w http.ResponseWriter, r *http.Request) {
-        w.Write([]byte("Video list endpoint"))
-    })
 
+func main() {
+
+    db = setupDatabase()
+    r := routers.SetupRoutes(db)
     // Start server
     log.Println("Server starting on :8080")
     http.ListenAndServe(":8080", r)
