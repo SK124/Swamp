@@ -30,6 +30,5 @@ func WSHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			break
 		}
-		log.Printf(string(message))
 	}
 }
