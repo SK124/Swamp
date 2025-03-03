@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./frontend  # Set working directory to frontend folder
+        working-directory: ./frontend 
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -40,14 +40,14 @@ jobs:
           record: false
 
       - name: Upload screenshots
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: cypress-screenshots
           path: frontend/cypress/screenshots
 
       - name: Upload videos
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: cypress-videos
