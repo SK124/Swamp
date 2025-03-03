@@ -2,7 +2,7 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { configureStore } from '@reduxjs/toolkit'
 import userReducer from '../../src/store/userSlice'
-import Signup from '../../src/pages/Signup'
+import Signup from '../../src/pages/SignUp'
 
 describe('Signup Component', () => {
   let store;
