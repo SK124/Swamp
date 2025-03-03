@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./frontend  # Set working directory to frontend folder
+        working-directory: ./frontend 
     steps:
       - name: Checkout
         uses: actions/checkout@v3
