@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import Login from './Login';
-import Signup from './Signup';
+import Signup from './SignUp';
 
 const AuthPage = () => {
   const [isLogin, setIsLogin] = useState(true);
