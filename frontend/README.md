@@ -9,6 +9,7 @@ Basic frontend structure for The Swamp web app consisting of boilerplate code, L
     > npm install ( to install all dependencies in package.json)
     > npm run dev ( to run the server )
 
+
 # Running Cypress Tests
 
 ## Component Tests
