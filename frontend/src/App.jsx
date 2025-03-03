@@ -9,7 +9,7 @@ import Profile from './pages/Profile';
 import CreateRoom from './pages/CreateRoom';
 import Login from './pages/Login';
 import PrivateRoute from './components/PrivateRoute';
-import Signup from './pages/Signup';
+import Signup from './pages/SignUp';
 import AuthPage from './pages/AuthPage';
 
 const App = () => {
