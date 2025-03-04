@@ -67,27 +67,61 @@ const Signup = () => {
     return Object.keys(otpErrors).length === 0;
   };
 
-  const handleInitialSubmit = (e) => {
+  const handleInitialSubmit = async (e) => {
     e.preventDefault();
-    
+  
     if (validateInitialForm()) {
-      setShowOtp(true);
+      try {
+        const response = await fetch("http://localhost:8080/api/request-otp", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email }),
+        });
+  
+        const data = await response.json();
+  
+        if (response.ok) {
+          setShowOtp(true);
+        } else {
+          setErrors((prevErrors) => ({ ...prevErrors, email: data.message || "Failed to send OTP" }));
+        }
+      } catch (error) {
+        setErrors((prevErrors) => ({ ...prevErrors, email: "Network error, please try again" }));
+      }
     }
   };
+  
 
-  const handleFinalSubmit = (e) => {
+  const handleFinalSubmit = async (e) => {
     e.preventDefault();
-    
+  
     if (validateFinalForm()) {
-      // Dispatch user data to Redux store
-      dispatch(setUser({ 
-        id: Date.now().toString(), 
-        name: fullName,
-        email: email
-      }));
-      setSignupSuccess(true);
+      try {
+        const response = await fetch("http://localhost:8080/api/verify-otp", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, otp, fullName, password }),
+        });
+  
+        const data = await response.json();
+  
+        if (response.ok) {
+          // Dispatch user data to Redux store after successful OTP verification
+          dispatch(setUser({
+            id: Date.now().toString(),
+            name: fullName,
+            email: email,
+          }));
+          setSignupSuccess(true);
+        } else {
+          setErrors((prevErrors) => ({ ...prevErrors, otp: data.message || "Invalid OTP" }));
+        }
+      } catch (error) {
+        setErrors((prevErrors) => ({ ...prevErrors, otp: "Network error, please try again" }));
+      }
     }
   };
+  
 
   if (signupSuccess) {
     return (

@@ -10,17 +10,49 @@ import { setUser } from '../store/userSlice';
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    dispatch(setUser({ 
-      id: '1', 
-      email: email,
-      name: 'Test User' 
-    }));
-    navigate('/');
+    setError('');
+    setIsLoading(true);
+    
+    try {
+      const response = await fetch('http://localhost:8080/api/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+      
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.error || 'Login failed');
+      }
+      
+      // Store the token in localStorage or a secure cookie
+      localStorage.setItem('token', data.token);
+      
+      // Update Redux store with user data
+      dispatch(setUser({ 
+        id: data.user.id.toString(), 
+        email: data.user.email,
+        name: data.user.fullName 
+      }));
+      
+      // Redirect to home page
+      navigate('/');
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -30,6 +62,12 @@ const Login = () => {
           <CardTitle className="text-2xl text-center">Welcome to The Swamp</CardTitle>
         </CardHeader>
         <CardContent>
+          {error && (
+            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+              {error}
+            </div>
+          )}
+          
           <form onSubmit={handleLogin} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
@@ -53,8 +91,12 @@ const Login = () => {
                 required
               />
             </div>
-            <Button type="submit" className="w-full">
-              Login
+            <Button 
+              type="submit" 
+              className="w-full"
+              disabled={isLoading}
+            >
+              {isLoading ? 'Logging in...' : 'Login'}
             </Button>
           </form>
         </CardContent>
