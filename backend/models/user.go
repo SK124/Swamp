@@ -1,15 +1,12 @@
 package models
 
 import (
-	"time"
 	"gorm.io/gorm"
 )
 
 type User struct {
-    gorm.Model
-    ID             int       `gorm:"primaryKey"`
-    Username       string
-    CreatedAt      time.Time
-    UpdatedAt      time.Time
-    Deleted        bool
+	gorm.Model
+	FullName string `json:"full_name"`
+	Email    string `json:"email" gorm:"uniqueIndex"`
+	Password string `json:"-"` // Password is not exposed in JSON responses
 }

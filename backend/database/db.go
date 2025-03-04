@@ -1,26 +1,31 @@
 package database
 
 import (
-    "fmt"
-    "gorm.io/driver/postgres"
-    "gorm.io/gorm"
-    "swamp/models"
+	"fmt"
+	"log"
+	"swamp/models"
 
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
-//Setting up Postgres DB, I am using GORM
-func ConnectDB() (*gorm.DB, error) {
-    dsn := "host=localhost user=postgres password=postgres dbname=swamp port=5432 sslmode=disable"
+var DB *gorm.DB // Global variable to hold the database connection
+
+// ConnectDB initializes the PostgreSQL database connection
+func ConnectDB() *gorm.DB {
+	dsn := "host=localhost user=postgres dbname=postgres password=swamp port=5433 sslmode=disable"
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
-		return nil, err
-	}
-    //Setting up migration for swamp table, need to do for other models as well. 
-	err = db.AutoMigrate(&models.User{})
-	if err != nil {
-		return nil, fmt.Errorf("failed to auto migrate: %w", err)
+		log.Fatal("Failed to connect to the database:", err)
 	}
 
+	// AutoMigrate all models
+	err = db.AutoMigrate(&models.User{}, &models.OTP{})
+	if err != nil {
+		log.Fatal("Failed to migrate database:", err)
+	}
+
+	DB = db // Assign database instance to the global DB variable
 	fmt.Println("Database connected and tables migrated successfully!")
-	return db, nil
+	return DB
 }

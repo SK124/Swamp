@@ -31,7 +31,7 @@ func TestRoutes(t *testing.T) {
 		}
 	}()
 	// Set up the router with the test database
-	router := routers.SetupRoutes(db)
+	router := routers.SetupRoutes()
 
 	t.Run("Health endpoint returns OK", func(t *testing.T) {
 		req, _ := http.NewRequest("GET", "/health", nil)
@@ -76,8 +76,8 @@ func TestRoutes(t *testing.T) {
 
 // testing the CORS configuration
 func TestCORSSettings(t *testing.T) {
-	db := setupTestDB(t)
-	router := routers.SetupRoutes(db)
+	setupTestDB(t)
+	router := routers.SetupRoutes()
 
 	t.Run("CORS allows specified origins", func(t *testing.T) {
 		req, _ := http.NewRequest("OPTIONS", "/api", nil)
