@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"fmt"
 	"encoding/json"
 	"io"
 	"net/http"
@@ -27,7 +28,7 @@ type RequestOTPPayload struct {
 
 type VerifyOTPPayload struct {
 	Email string `json:"email"`
-	Code  string `json:"code"`
+	Code  string `json:"otp"`
 }
 
 type LoginPayload struct {
@@ -83,6 +84,7 @@ func ValidateRequest(next http.Handler) http.Handler {
 		case "/api/request-otp":
 			validationErrors = validateRequestOTP(payload.(*RequestOTPPayload))
 		case "/api/verify-otp":
+			fmt.Println("payload", payload)
 			validationErrors = validateVerifyOTP(payload.(*VerifyOTPPayload))
 		case "/api/login":
 			validationErrors = validateLogin(payload.(*LoginPayload))
@@ -121,7 +123,7 @@ func validateRequestOTP(payload *RequestOTPPayload) []ValidationError {
 // Validate VerifyOTP payload
 func validateVerifyOTP(payload *VerifyOTPPayload) []ValidationError {
 	var errors []ValidationError
-
+	fmt.Println("payload", payload)
 	if payload.Email == "" {
 		errors = append(errors, ValidationError{
 			Field:   "email",
