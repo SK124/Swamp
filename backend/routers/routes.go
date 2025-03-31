@@ -20,4 +20,7 @@ func SetupRoutes(r *chi.Mux) {
 
 	// Swamp routes
 	r.Post("/api/swamp", controllers.CreateSwamp)
+	r.Get("/api/swamp", controllers.GetSwamps)
+	r.Get("/api/swamp/{id}", controllers.GetSwampByID)
+
 }

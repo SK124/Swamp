@@ -65,3 +65,65 @@ func TestCreateSwamp(t *testing.T) {
 		})
 	}
 }
+
+func TestGetSwamps(t *testing.T) {
+	// Initialize the router
+	r := chi.NewRouter()
+	routers.SetupRoutes(r)
+
+	tests := []struct {
+		name          string
+		queryParams   string
+		expectedCode  int
+		expectedMeta  map[string]int
+	}{
+		{
+			name:         "Get swamps with default pagination",
+			queryParams:  "",
+			expectedCode: http.StatusOK,
+			expectedMeta: map[string]int{
+				"pageNumber":     1,
+				"recordsPerPage": 10,
+			},
+		},
+		{
+			name:         "Get swamps with custom pagination",
+			queryParams: "?pageNumber=2&recordsPerPage=5",
+			expectedCode: http.StatusOK,
+			expectedMeta: map[string]int{
+				"pageNumber":     2,
+				"recordsPerPage": 5,
+			},
+		},
+		{
+			name:         "Get swamps with invalid pagination",
+			queryParams: "?pageNumber=-1&recordsPerPage=0",
+			expectedCode: http.StatusOK,
+			expectedMeta: map[string]int{
+				"pageNumber":     1,
+				"recordsPerPage": 10,
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			w := httptest.NewRecorder()
+			httpReq, err := http.NewRequest("GET", "/swamps"+tt.queryParams, nil)
+			assert.NoError(t, err)
+
+			r.ServeHTTP(w, httpReq)
+
+			assert.Equal(t, tt.expectedCode, w.Code)
+
+			var response map[string]interface{}
+			err = json.Unmarshal(w.Body.Bytes(), &response)
+			assert.NoError(t, err)
+
+			meta, ok := response["meta"].(map[string]interface{})
+			assert.True(t, ok)
+			assert.Equal(t, tt.expectedMeta["pageNumber"], int(meta["pageNumber"].(float64)))
+			assert.Equal(t, tt.expectedMeta["recordsPerPage"], int(meta["recordsPerPage"].(float64)))
+		})
+	}
+}
