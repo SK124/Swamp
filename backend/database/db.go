@@ -3,7 +3,7 @@ package database
 import (
 	"fmt"
 	"log"
-	"swamp/models"
+	// "swamp/models"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -19,10 +19,10 @@ func ConnectDB() *gorm.DB {
 		log.Fatal("Failed to connect to the database:", err)
 	}
 
-	// AutoMigrate all models
+	AutoMigrate all models
 	err = db.AutoMigrate(&models.User{}, &models.OTP{}, &models.Swamp{})
 	if err != nil {
-		log.Fatal("Failed to migrate database:", err)
+		log.Fatalf("Failed to migrate database %v:", err)
 	}
 
 	DB = db // Assign database instance to the global DB variable
