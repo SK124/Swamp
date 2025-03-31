@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	"swamp/database"
-	"swamp/models"
 	"swamp/routers"
 
 	"github.com/go-chi/chi/v5"
@@ -31,7 +30,6 @@ func setupDatabase() *gorm.DB {
 
 	// // AutoMigrate models
 	// db.AutoMigrate(&models.User{})
-	db.AutoMigrate(&models.User{}, &models.OTP{})
 	return db
 }
 
