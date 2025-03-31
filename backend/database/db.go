@@ -3,7 +3,7 @@ package database
 import (
 	"fmt"
 	"log"
-	// "swamp/models"
+	"swamp/models"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
