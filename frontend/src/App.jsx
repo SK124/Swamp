@@ -2,59 +2,81 @@ import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider } from "@/components/theme-provider";
 import { useSelector } from 'react-redux';
-import Navbar from './components/Navbar';
+
+// Core Components
+import Navbar from './components/Navbar'; // Assuming Navbar is okay
+import PrivateRoute from './components/PrivateRoute'; // Assuming PrivateRoute is okay
+
+// Page Components (Updated List)
 import Home from './pages/Home';
-import Room from './pages/Room';
-import Profile from './pages/Profile';
-import CreateRoom from './pages/CreateRoom';
-import Login from './pages/Login';
-import PrivateRoute from './components/PrivateRoute';
-import Signup from './pages/SignUp';
 import AuthPage from './pages/AuthPage';
+// --- Import the new/renamed page components ---
+import CreateRoom from './pages/CreateRoom'; // Renamed from CreateSwamp
+import SwampDetail from './pages/SwampDetail'; // Replaces the concept of 'Room' detail
+import UserProfile from './pages/UserProfile'; // Replaces the old 'Profile'
+
+// Remove imports for the old pages that are being replaced if they exist
+// import Room from './pages/Room';
+// import Profile from './pages/Profile';
+// import Login from './pages/Login'; // Covered by AuthPage
+// import Signup from './pages/SignUp'; // Covered by AuthPage
+
 
 const App = () => {
+  // Assuming isAuthenticated is correctly updated in your Redux store upon login/logout
   const isAuthenticated = useSelector(state => state.user.isAuthenticated);
 
   return (
     <ThemeProvider defaultTheme="dark" storageKey="clubhouse-theme">
       <BrowserRouter>
         <div className="min-h-screen bg-background">
+          {/* Show Navbar only when logged in */}
           {isAuthenticated && <Navbar />}
+
+          {/* Apply container styling only for authenticated views */}
           <main className={isAuthenticated ? "container mx-auto px-4 py-6" : ""}>
             <Routes>
-            <Route path="/auth" element={
-                isAuthenticated ? <Navigate to="/" /> : <AuthPage />
+              {/* Authentication Route */}
+              <Route path="/auth" element={
+                isAuthenticated ? <Navigate to="/" /> : <AuthPage /> // Redirect home if already logged in
               } />
-              {/* <Route path="/signup" element={
-                isAuthenticated ? <Navigate to="/" /> : <Signup />
-              } />
-              <Route path="/login" element={
-                isAuthenticated ? <Navigate to="/" /> : <Login />
-              } /> */}
-              
+
+              {/* --- Protected Routes --- */}
+
+              {/* Home Page (Lists Swamps/Rooms) */}
               <Route path="/" element={
                 <PrivateRoute>
                   <Home />
                 </PrivateRoute>
               } />
-              
-              <Route path="/room/:roomId" element={
+
+              {/* Swamp Detail Page (Replaces old /room/:roomId) */}
+              {/* Note: Path changed to /swamp/:swampId for clarity */}
+              <Route path="/swamp/:swampId" element={
                 <PrivateRoute>
-                  <Room />
+                  <SwampDetail />
                 </PrivateRoute>
               } />
-              
+
+              {/* User Profile Page (Replaces old /profile/:userId) */}
               <Route path="/profile/:userId" element={
                 <PrivateRoute>
-                  <Profile />
+                  <UserProfile />
                 </PrivateRoute>
               } />
-              
+
+              {/* Create Room Page (Uses the new CreateRoom component, formerly CreateSwamp) */}
               <Route path="/create-room" element={
                 <PrivateRoute>
                   <CreateRoom />
                 </PrivateRoute>
               } />
+
+              {/* Optional: Redirect any unexpected authenticated routes back home */}
+              <Route path="*" element={
+                 isAuthenticated ? <Navigate to="/" /> : <Navigate to="/auth" />
+              }/>
+
             </Routes>
           </main>
         </div>

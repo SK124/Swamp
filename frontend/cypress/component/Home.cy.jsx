@@ -3,7 +3,9 @@ import Home from '../../src/pages/Home'
 
 describe('Home Component', () => {
   beforeEach(() => {
+
     // Stub the fetch API to return mock data
+
     cy.intercept('GET', 'http://localhost:8080/api/swamp*', {
       statusCode: 200,
       body: {
@@ -62,13 +64,12 @@ describe('Home Component', () => {
   });
 
   it('should show loading state initially', () => {
-    // Re-mount without waiting for the API response
+
     cy.mount(<Home />);
     cy.contains('Loading swamps...').should('be.visible');
   });
 
   it('should display error message when API fails', () => {
-    // Stub the API to return an error
     cy.intercept('GET', 'http://localhost:8080/api/swamp*', {
       statusCode: 500,
       body: 'Server error'
@@ -80,7 +81,6 @@ describe('Home Component', () => {
   });
 
   it('should display a message when no swamps are available', () => {
-    // Stub the API to return empty results
     cy.intercept('GET', 'http://localhost:8080/api/swamp*', {
       statusCode: 200,
       body: {
