@@ -8,8 +8,10 @@ const Home = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const scrollContainerRef = useRef(null);
-  const [allTopics, setAllTopics] = useState([])
+  // const [allTopics, setAllTopics] = useState([])
+  const [topics, setTopics] = useState([])
 
+  const API_BASE_URL = 'http://localhost:8080/api'; 
 
   useEffect(() => {
     const fetchSwamps = async () => {
@@ -36,6 +38,13 @@ const Home = () => {
 
     fetchSwamps();
   }, []);
+
+  useEffect(() => {
+    fetch(`${API_BASE_URL}/topics`)
+      .then(r => r.json())
+      .then(setTopics)
+      .catch(console.error)
+  }, [])
 
   const formatDateTime = (dateTimeString) => {
     const date = new Date(dateTimeString);
@@ -119,7 +128,7 @@ const Home = () => {
                                 0/{swamp.MaxParticipants || 'Unlimited'}
                               </span>
                             </div>
-                            {swamp.Topics && swamp.Topics.length > 0 && (
+                            {/* {swamp.Topics && swamp.Topics.length > 0 && (
                               <div className="mt-3 flex flex-wrap gap-2">
                                 {swamp.Topics.map((topicId, index) => (
                                   <span
@@ -130,7 +139,12 @@ const Home = () => {
                                   </span>
                                 ))}
                               </div>
-                            )}
+                            )} */}
+                            {swamp.Topic ? (
+                            <span className="px-2 py-1 bg-gray-200 text-gray-800 text-xs rounded-full">
+                            {swamp.Topic.Name}
+                            </span>
+                            ) : null}
                           </div>
                         </CardContent>
                       </Card>

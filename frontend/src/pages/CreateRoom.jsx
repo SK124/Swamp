@@ -16,7 +16,8 @@ const CreateRoom = () => {
 
   // Form State
   const [title, setTitle] = useState('');
-  const [selectedTopicIds, setSelectedTopicIds] = useState([]);
+  // const [selectedTopicIds, setSelectedTopicIds] = useState([]);
+  const [selectedTopic,  setSelectedTopic]  = useState(null);
   const [maxParticipants, setMaxParticipants] = useState(10);
   const [startTime, setStartTime] = useState(''); 
   const [duration, setDuration] = useState(60); 
@@ -65,7 +66,7 @@ const CreateRoom = () => {
    
     const swampData = {
       Title: title,
-      Topics: [],//selectedTopicIds, // array of selected IDs
+      TopicID: selectedTopic, // selected ID
       OwnerID: parseInt(currentUser.id, 10), 
       MaxParticipants: parseInt(maxParticipants, 10),
       StartTime: formattedStartTime, 
@@ -137,7 +138,7 @@ const CreateRoom = () => {
               />
             </div>
 
-            <div className="space-y-2">
+            {/* <div className="space-y-2">
               <Label>Topics (Optional)</Label>
               <div className="grid grid-cols-2 gap-2 p-2 border rounded">
               {availableTopics.map((topic) => (
@@ -153,8 +154,27 @@ const CreateRoom = () => {
               </div>
               ))}
               </div>
-            </div>
+            </div> */}
 
+            <div className="space-y-2">
+              <Label>Topic*</Label>
+              <div className="space-y-2 p-2 border rounded">
+                {availableTopics.map(topic => (
+                  <label key={topic.ID} className="flex items-center space-x-2">
+                    <input
+                      type="radio"
+                      name="topic"
+                      value={topic.ID}
+                      checked={selectedTopic === topic.ID}
+                      onChange={() => setSelectedTopic(topic.ID)}
+                      className="form-radio"
+                    />
+                    <span>{topic.Name}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+            
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                 <Label htmlFor="maxParticipants">Max Participants</Label>
