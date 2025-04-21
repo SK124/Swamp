@@ -8,7 +8,8 @@ import (
 
 type Swamp struct {
 	gorm.Model
-	ID              int `gorm:"primaryKey"`
+	ID              int    `gorm:"primaryKey"`
+	UUID            string `gorm:"uniqueIndex"`
 	Title           string
 	Topics          []int `gorm:"type:integer[]"`
 	OwnerID         int
