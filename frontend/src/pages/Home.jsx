@@ -8,6 +8,8 @@ const Home = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const scrollContainerRef = useRef(null);
+  const [allTopics, setAllTopics] = useState([])
+
 
   useEffect(() => {
     const fetchSwamps = async () => {

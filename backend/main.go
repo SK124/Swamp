@@ -31,7 +31,7 @@ func setupDatabase() *gorm.DB {
 func startChiServer() {
 	r := chi.NewRouter()
 	r.Use(chi_cors.Handler(chi_cors.Options{
-		AllowedOrigins:   []string{"http://localhost:5173"}, // Add your frontend URL here
+		AllowedOrigins:   []string{"http://localhost:5173", "http://localhost:5174"}, 
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowedHeaders:   []string{"Content-Type", "Authorization"},
 		AllowCredentials: true,
@@ -44,7 +44,7 @@ func startChiServer() {
 func startFiberServer() {
 	app := fiber.New()
 	app.Use(cors.New(cors.Config{
-		AllowOrigins:     "http://localhost:5173", // Add your frontend URL here
+		AllowOrigins:     "http://localhost:5173,http://localhost:5174", 
 		AllowMethods:     "GET,POST,PUT,DELETE,OPTIONS",
 		AllowHeaders:     "Content-Type,Authorization",
 		AllowCredentials: true,

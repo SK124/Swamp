@@ -1,4 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
+import ChatWindow from '@/components/ChatWindow';
+
 
 const ICE_SERVERS = [
   { urls: 'stun:relay.metered.ca:80' },
@@ -117,35 +119,41 @@ const SwampStream = ({ noStream, streamWebsocketAddr }) => {
   }
 
   return (
-    <div className="p-4 space-y-6">
-      {/* Placeholder for future chat component */}
-      <div id="chat" className="flex">
-        Chat goes here
-      </div>
-
-      <div className="text-gray-500 text-sm">Viewers: {peerStreams.length}</div>
-
-      <div
-        id="peers"
-        className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"
-      >
+    <div className="p-4 grid grid-cols-1 lg:grid-cols-3 gap-6">
+      {/* Video area (2/3) */}
+      <div className="lg:col-span-2 space-y-4">
+        <div className="text-gray-500 text-sm">
+          Viewers: {peerStreams.length}
+        </div>
+  
         {!streamerPresent && !connectionClosed && (
           <div className="bg-blue-100 p-4 rounded text-blue-700">
             <p>Hey! No streamer in the room.</p>
             <p>Please wait for the streamer.</p>
           </div>
         )}
-
+  
         {connectionClosed && (
           <div className="bg-red-100 p-4 rounded text-red-700">
             <p>Connection is closed!</p>
             <p>Please refresh the page.</p>
           </div>
         )}
-
-        {peerStreams.map((stream) => (
-          <VideoStream key={stream.id} stream={stream} />
-        ))}
+  
+        <div
+          id="peers"
+          className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"
+        >
+          {peerStreams.map((stream) => (
+            <VideoStream key={stream.id} stream={stream} />
+          ))}
+        </div>
+      </div>
+  
+      {/* Chat panel (1/3) */}
+      <div className="lg:col-span-1 flex flex-col h-[600px] bg-white border rounded shadow">
+        <div className="px-4 py-2 flex justify-between items-center bg-gray-900 text-white border-b border-gray-700 font-semibold">Live Chat</div>
+        <ChatWindow uuid={suuid} inline />
       </div>
     </div>
   );

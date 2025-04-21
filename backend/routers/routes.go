@@ -28,6 +28,11 @@ func SetupRoutes(r *chi.Mux) {
 	r.Get("/api/swamp", controllers.GetSwamps)
 	r.Get("/api/swamp/{id}", controllers.GetSwampByID)
 
+	r.Post("/api/topics",           controllers.CreateTopic)
+	r.Get( "/api/topics",           controllers.ListTopics)
+	r.Get( "/api/user/{userID}/topics", controllers.GetUserTopics)
+	r.Post("/api/user/{userID}/topics", controllers.SetUserTopics)
+
 }
 
 func SetupFiberRoutes(app *fiber.App, db *gorm.DB) {
