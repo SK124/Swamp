@@ -7,15 +7,6 @@ import { Label } from "@/components/ui/label";
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 
-// --- MOCK DATA ---
-const MOCK_AVAILABLE_TOPICS = [
-  { id: 1, name: 'React Development' },
-  { id: 2, name: 'Go Backend' },
-  { id: 3, name: 'UI/UX Design' },
-  { id: 4, name: 'DevOps' },
-  { id: 5, name: 'General Chit-Chat' },
-];
-// --- END MOCK DATA ---
 
 const API_BASE_URL = 'http://localhost:8080/api'; 
 
@@ -38,7 +29,10 @@ const CreateRoom = () => {
   // Fetch available topics from the API
   useEffect(() => {
 
-    setAvailableTopics(MOCK_AVAILABLE_TOPICS);
+    fetch(`${API_BASE_URL}/topics`)
+    .then(r => r.json())
+    .then(setAvailableTopics)
+    .catch(err => console.error('Failed to load topics', err))
   }, []);
 
   const handleTopicChange = (topicId) => {
@@ -71,7 +65,7 @@ const CreateRoom = () => {
    
     const swampData = {
       Title: title,
-      Topics: selectedTopicIds, // array of selected IDs
+      Topics: [],//selectedTopicIds, // array of selected IDs
       OwnerID: parseInt(currentUser.id, 10), 
       MaxParticipants: parseInt(maxParticipants, 10),
       StartTime: formattedStartTime, 
@@ -146,18 +140,18 @@ const CreateRoom = () => {
             <div className="space-y-2">
               <Label>Topics (Optional)</Label>
               <div className="grid grid-cols-2 gap-2 p-2 border rounded">
-                {availableTopics.map((topic) => (
-                  <div key={topic.id} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={`topic-${topic.id}`}
-                      checked={selectedTopicIds.includes(topic.id)}
-                      onCheckedChange={() => handleTopicChange(topic.id)}
-                    />
-                    <Label htmlFor={`topic-${topic.id}`} className="font-normal">
-                      {topic.name}
-                    </Label>
-                  </div>
-                ))}
+              {availableTopics.map((topic) => (
+              <div key={topic.ID} className="flex items-center space-x-2">
+              <Checkbox
+              id={`topic-${topic.ID}`}
+              checked={selectedTopicIds.includes(topic.ID)}
+              onCheckedChange={() => handleTopicChange(topic.ID)}
+              />
+              <Label htmlFor={`topic-${topic.ID}`} className="font-normal">
+              {topic.Name}
+              </Label>
+              </div>
+              ))}
               </div>
             </div>
 

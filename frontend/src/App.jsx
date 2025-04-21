@@ -15,12 +15,8 @@ import CreateRoom from './pages/CreateRoom'; // Renamed from CreateSwamp
 import SwampDetail from './pages/SwampDetail'; // Replaces the concept of 'Room' detail
 import SwampBroadcast from './pages/SwampBroadcast'; // Replaces the concept of 'Room' detail
 import UserProfile from './pages/UserProfile'; // Replaces the old 'Profile'
+import CreateTopic  from './pages/CreateTopic'
 
-// Remove imports for the old pages that are being replaced if they exist
-// import Room from './pages/Room';
-// import Profile from './pages/Profile';
-// import Login from './pages/Login'; // Covered by AuthPage
-// import Signup from './pages/SignUp'; // Covered by AuthPage
 
 const App = () => {
   // Assuming isAuthenticated is correctly updated in your Redux store upon login/logout
@@ -95,6 +91,9 @@ const App = () => {
                   </PrivateRoute>
                 }
               />
+              <Route path="/create-topic" element={
+               <PrivateRoute><CreateTopic/></PrivateRoute>
+              }/>
               {/* Optional: Redirect any unexpected authenticated routes back home */}
               <Route
                 path="*"

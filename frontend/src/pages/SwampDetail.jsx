@@ -12,6 +12,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
+import ChatWindow from '@/components/ChatWindow';
 
 // --- MOCK DATA ---
 const MOCK_AVAILABLE_TOPICS = [
@@ -33,6 +34,7 @@ const SwampDetail = () => {
   const [swampDetails, setSwampDetails] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
+  const [showChat,  setShowChat]  = useState(false);
 
   useEffect(() => {
     const fetchSwampDetails = async () => {
@@ -87,17 +89,16 @@ const SwampDetail = () => {
     navigate(`/swamp/${swampId}/stream`, { state: { swampDetails } });
   };
 
+  const handleGoToChat = () => {
+       setShowChat(true);
+  };
+
   const handleLeaveSwamp = () => {
     console.log(`Leaving Swamp ID: ${swampId}`);
     // DELETE /api/swamp/{swampId}/participants/{userId}
     alert('Leave Swamp functionality not implemented yet.');
   };
 
-  const handleGoToChat = () => {
-    console.log(`Going to chat for Swamp ID: ${swampId}`);
-    // Implement navigation/logic for live chat (requires chat backend)
-    alert(`Live chat functionality not implemented yet.`);
-  };
 
   if (isLoading) {
     return (
@@ -173,9 +174,9 @@ const SwampDetail = () => {
             Leave Swamp
           </Button> */}
           <Button onClick={handleJoinSwamp}>Join Swamp</Button>
-          <Button variant="outline" onClick={handleGoToChat}>
+          {/* <Button variant="outline" onClick={handleGoToChat}>
             Go to Live Chat
-          </Button>
+          </Button> */}
         </CardFooter>
       </Card>
     </div>
