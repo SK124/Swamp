@@ -1,11 +1,10 @@
 import React from 'react'
+import { BrowserRouter } from 'react-router-dom'
 import Home from '../../src/pages/Home'
 
 describe('Home Component', () => {
   beforeEach(() => {
-
     // Stub the fetch API to return mock data
-
     cy.intercept('GET', 'http://localhost:8080/api/swamp*', {
       statusCode: 200,
       body: {
@@ -33,12 +32,18 @@ describe('Home Component', () => {
       }
     }).as('getSwamps');
     
-    cy.mount(<Home />);
+    // Mount the component wrapped in BrowserRouter for Link component
+    cy.mount(
+      <BrowserRouter>
+        <Home />
+      </BrowserRouter>
+    );
+    
     cy.wait('@getSwamps');
   });
 
   it('should display the explore swamps heading', () => {
-    cy.contains('Explore Swamps').should('be.visible');
+    cy.contains('h1', 'Explore Swamps').should('be.visible');
   });
 
   it('should display swamp cards with correct information', () => {
@@ -63,9 +68,34 @@ describe('Home Component', () => {
     cy.contains('Topic 3').should('be.visible');
   });
 
-  it('should show loading state initially', () => {
+  it('should provide links to individual swamp pages', () => {
+    // Check that links to swamp details are present with correct hrefs
+    cy.get('a[href="/swamp/1"]').should('exist');
+    cy.get('a[href="/swamp/2"]').should('exist');
+    
+    // Check that the link wraps the entire card
+    cy.get('a[href="/swamp/1"]').find('.card').should('exist');
+  });
 
-    cy.mount(<Home />);
+  it('should show loading state initially', () => {
+    // Intercept but don't respond immediately to simulate loading
+    cy.intercept('GET', 'http://localhost:8080/api/swamp*', (req) => {
+      req.reply({
+        delay: 1000,
+        statusCode: 200,
+        body: {
+          allDocuments: [],
+          meta: { totalResults: 0 }
+        }
+      });
+    }).as('delayedSwamps');
+    
+    cy.mount(
+      <BrowserRouter>
+        <Home />
+      </BrowserRouter>
+    );
+    
     cy.contains('Loading swamps...').should('be.visible');
   });
 
@@ -75,7 +105,12 @@ describe('Home Component', () => {
       body: 'Server error'
     }).as('getSwampsError');
     
-    cy.mount(<Home />);
+    cy.mount(
+      <BrowserRouter>
+        <Home />
+      </BrowserRouter>
+    );
+    
     cy.wait('@getSwampsError');
     cy.contains('Error:').should('be.visible');
   });
@@ -91,14 +126,105 @@ describe('Home Component', () => {
       }
     }).as('getEmptySwamps');
     
-    cy.mount(<Home />);
+    cy.mount(
+      <BrowserRouter>
+        <Home />
+      </BrowserRouter>
+    );
+    
     cy.wait('@getEmptySwamps');
     cy.contains('No Swamps Available').should('be.visible');
     cy.contains('There are currently no swamps to display.').should('be.visible');
   });
 
-  it('should have functional scroll navigation', () => {
+  it('should have functional scroll navigation buttons', () => {
+    // Spy on the scrollBy method
+    const scrollBySpy = cy.spy().as('scrollBySpy');
+    cy.window().then((win) => {
+      cy.stub(win.HTMLElement.prototype, 'scrollBy').callsFake(scrollBySpy);
+    });
+    
+    // Click scroll right button
     cy.get('[aria-label="Scroll right"]').should('be.visible').click();
+    cy.get('@scrollBySpy').should('have.been.calledWith', { left: 340, behavior: 'smooth' });
+    
+    // Click scroll left button
     cy.get('[aria-label="Scroll left"]').should('be.visible').click();
+    cy.get('@scrollBySpy').should('have.been.calledWith', { left: -340, behavior: 'smooth' });
+  });
+
+  it('should display total results count', () => {
+    cy.contains('Showing 2 of 2 total results').should('be.visible');
+  });
+
+  it('should handle the formatting of time properly', () => {
+    // Add a swamp with different time format
+    cy.intercept('GET', 'http://localhost:8080/api/swamp*', {
+      statusCode: 200,
+      body: {
+        allDocuments: [
+          {
+            ID: '3',
+            Title: 'Midnight Swamp',
+            StartTime: '2025-04-30T00:00:00Z',
+            Duration: 30,
+            MaxParticipants: 5,
+            Topics: []
+          }
+        ],
+        meta: {
+          totalResults: 1
+        }
+      }
+    }).as('getTimeSwamp');
+    
+    cy.mount(
+      <BrowserRouter>
+        <Home />
+      </BrowserRouter>
+    );
+    
+    cy.wait('@getTimeSwamp');
+    
+    // Test formatted time display
+    const midnightDate = new Date('2025-04-30T00:00:00Z');
+    cy.contains(midnightDate.toLocaleString()).should('be.visible');
+    
+    // Test short duration formatting
+    cy.contains('30 min').should('be.visible');
+  });
+
+  it('should handle swamps with no topics', () => {
+    cy.intercept('GET', 'http://localhost:8080/api/swamp*', {
+      statusCode: 200,
+      body: {
+        allDocuments: [
+          {
+            ID: '4',
+            Title: 'Topicless Swamp',
+            StartTime: '2025-05-01T12:00:00Z',
+            Duration: 45,
+            MaxParticipants: 15,
+            Topics: []
+          }
+        ],
+        meta: {
+          totalResults: 1
+        }
+      }
+    }).as('getNoTopicsSwamp');
+    
+    cy.mount(
+      <BrowserRouter>
+        <Home />
+      </BrowserRouter>
+    );
+    
+    cy.wait('@getNoTopicsSwamp');
+    
+    // The card should be visible without topics
+    cy.contains('Topicless Swamp').should('be.visible');
+    // The topics section should not be visible
+    cy.get('.bg-blue-100').should('not.exist');
   });
 });

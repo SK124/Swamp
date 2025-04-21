@@ -14,51 +14,171 @@ const MOCK_SWAMP_DATA = {
   MaxParticipants: 15,
   StartTime: new Date(Date.now() + 3 * 3600 * 1000).toISOString(), 
   Duration: 45,
-
 };
 // --- End Mock Data ---
 
-
-describe('SwampDetail Component (Intercepted)', () => {
-
-  beforeEach(() => {
-    //Intercept the API Call
-    // Intercept the GET request the component makes
-    cy.intercept('GET', `/api/swamp/${MOCK_SWAMP_ID}`, {
+describe('SwampDetail Component', () => {
+  context('When loading data', () => {
+    beforeEach(() => {
+      // Intercept the API call with a delay to test loading state
+      cy.intercept('GET', `http://localhost:8080/api/swamp/${MOCK_SWAMP_ID}`, {
+        delay: 500,
         statusCode: 200,
         body: MOCK_SWAMP_DATA 
-    }).as('getSwamp'); 
+      }).as('getSwampDelayed');
+      
+      cy.mount(
+        <MemoryRouter initialEntries={[`/swamp/${MOCK_SWAMP_ID}`]}>
+          <Routes>
+            <Route path="/swamp/:swampId" element={<SwampDetail />} />
+          </Routes>
+        </MemoryRouter>
+      );
+    });
 
-    
-    cy.mount(
-      <MemoryRouter initialEntries={[`/swamp/${MOCK_SWAMP_ID}`]}>
-        <Routes>
-          <Route path="/swamp/:swampId" element={<SwampDetail />} />
-        </Routes>
-      </MemoryRouter>
-    );
+    it('should display skeleton loading state', () => {
+      // Check for skeleton components before data loads
+      cy.get('.skeleton').should('exist');
+    });
   });
 
-  it('should display the swamp title after API call', () => {
-    cy.wait('@getSwamp'); // Wait for the intercepted call to complete
-    cy.contains(MOCK_SWAMP_DATA.Title).should('be.visible');
+  context('With successful data fetch', () => {
+    beforeEach(() => {
+      // Intercept the API Call with correct base URL
+      cy.intercept('GET', `http://localhost:8080/api/swamp/${MOCK_SWAMP_ID}`, {
+        statusCode: 200,
+        body: MOCK_SWAMP_DATA 
+      }).as('getSwamp'); 
+      
+      cy.mount(
+        <MemoryRouter initialEntries={[`/swamp/${MOCK_SWAMP_ID}`]}>
+          <Routes>
+            <Route path="/swamp/:swampId" element={<SwampDetail />} />
+          </Routes>
+        </MemoryRouter>
+      );
+
+      cy.wait('@getSwamp');
+    });
+
+    it('should display the swamp title after API call', () => {
+      cy.contains(MOCK_SWAMP_DATA.Title).should('be.visible');
+    });
+
+    it('should display owner ID and duration', () => {
+      cy.contains(`Hosted by Owner ID: ${MOCK_SWAMP_DATA.OwnerID}`).should('be.visible');
+      cy.contains(`Duration: ${MOCK_SWAMP_DATA.Duration} mins`).should('be.visible');
+    });
+
+    it('should display formatted start time', () => {
+      const formattedDate = new Date(MOCK_SWAMP_DATA.StartTime).toLocaleString([], {
+        dateStyle: 'medium',
+        timeStyle: 'short',
+      });
+      cy.contains(`Starts: ${formattedDate}`).should('be.visible');
+    });
+
+    it('should display topic badges', () => {
+      cy.contains('React Development').should('be.visible');
+      cy.contains('UI/UX Design').should('be.visible');
+      cy.get('.badge').should('have.length', 2);
+    });
+
+    it('should display participants section', () => {
+      cy.contains(`Participants (0 / ${MOCK_SWAMP_DATA.MaxParticipants})`).should('be.visible');
+      cy.contains('Participant list:').should('be.visible');
+    });
+
+    it('should display the join button', () => {
+      cy.contains('button', 'Join Swamp').should('be.visible');
+    });
+
+    it('should redirect to stream page when join button is clicked', () => {
+      // Spy on navigate function
+      const navigateSpy = cy.spy().as('navigateSpy');
+      cy.stub(require('react-router-dom'), 'useNavigate').returns(navigateSpy);
+      
+      // Re-mount with the new stub
+      cy.mount(
+        <MemoryRouter initialEntries={[`/swamp/${MOCK_SWAMP_ID}`]}>
+          <Routes>
+            <Route path="/swamp/:swampId" element={<SwampDetail />} />
+          </Routes>
+        </MemoryRouter>
+      );
+      
+      cy.wait('@getSwamp');
+      cy.contains('button', 'Join Swamp').click();
+      cy.get('@navigateSpy').should('have.been.calledWith', 
+        `/swamp/${MOCK_SWAMP_ID}/stream`, 
+        { state: { swampDetails: MOCK_SWAMP_DATA } }
+      );
+    });
   });
 
-   it('should display owner ID and duration', () => {
-    cy.wait('@getSwamp');
-    cy.contains(`Hosted by Owner ID: ${MOCK_SWAMP_DATA.OwnerID}`).should('be.visible');
-    cy.contains(`Duration: ${MOCK_SWAMP_DATA.Duration} mins`).should('be.visible');
-   });
+  context('With API errors', () => {
+    it('should handle 404 not found error', () => {
+      cy.intercept('GET', `http://localhost:8080/api/swamp/${MOCK_SWAMP_ID}`, {
+        statusCode: 404,
+        body: { error: 'Swamp not found' }
+      }).as('swampNotFound');
+      
+      cy.mount(
+        <MemoryRouter initialEntries={[`/swamp/${MOCK_SWAMP_ID}`]}>
+          <Routes>
+            <Route path="/swamp/:swampId" element={<SwampDetail />} />
+          </Routes>
+        </MemoryRouter>
+      );
+      
+      cy.wait('@swampNotFound');
+      cy.contains('Error: Swamp not found').should('be.visible');
+    });
 
-  it('should display placeholder text for participants', () => {
-    cy.wait('@getSwamp');
-    cy.contains(`Participants (0 / ${MOCK_SWAMP_DATA.MaxParticipants})`).should('be.visible');
+    it('should handle general server errors', () => {
+      cy.intercept('GET', `http://localhost:8080/api/swamp/${MOCK_SWAMP_ID}`, {
+        statusCode: 500,
+        body: { error: 'Internal server error' }
+      }).as('serverError');
+      
+      cy.mount(
+        <MemoryRouter initialEntries={[`/swamp/${MOCK_SWAMP_ID}`]}>
+          <Routes>
+            <Route path="/swamp/:swampId" element={<SwampDetail />} />
+          </Routes>
+        </MemoryRouter>
+      );
+      
+      cy.wait('@serverError');
+      cy.contains('Error: Internal server error').should('be.visible');
+    });
   });
 
-  it('should display placeholder action buttons', () => {
-    cy.wait('@getSwamp');
-    cy.contains('button', 'Leave Swamp').should('be.visible');
-    cy.contains('button', 'Join Swamp').should('be.visible');
-    cy.contains('button', 'Go to Live Chat').should('be.visible');
+  context('With swamps having no topics', () => {
+    beforeEach(() => {
+      const noTopicsSwamp = {
+        ...MOCK_SWAMP_DATA,
+        Topics: []
+      };
+      
+      cy.intercept('GET', `http://localhost:8080/api/swamp/${MOCK_SWAMP_ID}`, {
+        statusCode: 200,
+        body: noTopicsSwamp
+      }).as('getSwampNoTopics');
+      
+      cy.mount(
+        <MemoryRouter initialEntries={[`/swamp/${MOCK_SWAMP_ID}`]}>
+          <Routes>
+            <Route path="/swamp/:swampId" element={<SwampDetail />} />
+          </Routes>
+        </MemoryRouter>
+      );
+      
+      cy.wait('@getSwampNoTopics');
+    });
+
+    it('should display "No Topics" badge when topics array is empty', () => {
+      cy.contains('No Topics').should('be.visible');
+    });
   });
 });
