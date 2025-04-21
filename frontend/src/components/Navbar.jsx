@@ -18,7 +18,7 @@ const Navbar = () => {
         <div className="flex items-center gap-4">
           {/* Create Room button link */}
           <Button variant="ghost" asChild>
-            <Link to="/create-room">Create Room</Link>
+            <Link to="/create-room">Create Swamp</Link>
           </Button>
           <Button variant="ghost" asChild>
             <Link to="/create-topic">Create Topic</Link>
