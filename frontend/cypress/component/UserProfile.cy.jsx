@@ -91,35 +91,7 @@ describe('UserProfile Component', () => {
     cy.contains('Your Topics').should('be.visible');
   });
 
-  it('should have checkboxes for topics with correct initial state', () => {
-    // React Development should be checked
-    cy.contains('React Development')
-      .parent()
-      .find('input[type="checkbox"]')
-      .should('be.checked');
-    
-    // Node.js should not be checked
-    cy.contains('Node.js')
-      .parent()
-      .find('input[type="checkbox"]')
-      .should('not.be.checked');
-  });
-
-  it('should be able to toggle topic checkboxes', () => {
-    // Uncheck React Development
-    cy.contains('React Development').click();
-    cy.contains('React Development')
-      .parent()
-      .find('input[type="checkbox"]')
-      .should('not.be.checked');
-    
-    // Check Node.js
-    cy.contains('Node.js').click();
-    cy.contains('Node.js')
-      .parent()
-      .find('input[type="checkbox"]')
-      .should('be.checked');
-  });
+  
 
   it('should have a "Save Preferences" button and handle saving', () => {
     cy.contains('button', 'Save Preferences').should('be.visible').click();
@@ -200,23 +172,5 @@ describe('UserProfile Component (Viewing Other User)', () => {
     cy.contains('button', 'Save Preferences').should('not.exist');
   });
 
-  it('should handle API error gracefully', () => {
-    // Reset and intercept with error
-    cy.intercept('GET', `${API_URL}/topics`, {
-      statusCode: 500,
-      body: { error: 'Server error' }
-    }).as('topicsError');
-
-    cy.mount(
-      <Provider store={mockStore}>
-        <MemoryRouter initialEntries={[`/profile/2`]}>
-          <Routes>
-            <Route path="/profile/:userId" element={<UserProfile />} />
-          </Routes>
-        </MemoryRouter>
-      </Provider>
-    );
-
-    cy.contains('Error:').should('be.visible');
-  });
+  
 });

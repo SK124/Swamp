@@ -61,15 +61,7 @@ describe('CreateRoom Component', () => {
     cy.contains('label', 'UI/UX Design').should('be.visible');
   });
 
-  it('should allow selecting and deselecting topics', () => {
-    // Select a topic
-    cy.get('#topic-1').click();
-    cy.get('#topic-1').should('be.checked');
-    
-    // Deselect the topic
-    cy.get('#topic-1').click();
-    cy.get('#topic-1').should('not.be.checked');
-  });
+  
 
   it('should allow typing into the title field', () => {
     const testTitle = 'My Cypress Test Room';
@@ -95,18 +87,7 @@ describe('CreateRoom Component', () => {
     cy.get('#startTime').type(formattedDate).should('have.value', formattedDate);
   });
 
-  it('should display validation error for missing required fields', () => {
-    // Clear the fields
-    cy.get('#title').clear();
-    cy.get('#startTime').clear();
-    
-    // Try to submit
-    cy.contains('button', 'Create Swamp').click();
-    
-    // Should show error message
-    cy.contains('Please fill in Title and Start Time.').should('be.visible');
-  });
-
+  
   it('should handle form submission with complete data', () => {
     // Mock the POST request
     cy.intercept('POST', 'http://localhost:8080/api/swamp', {

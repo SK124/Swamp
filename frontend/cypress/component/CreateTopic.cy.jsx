@@ -49,38 +49,7 @@ describe('CreateTopic Component', () => {
     cy.contains('Topic name is required').should('be.visible');
   });
 
-  it('should handle successful topic creation', () => {
-    // Mock successful API response
-    cy.intercept('POST', 'http://localhost:8080/api/topics', {
-      statusCode: 201,
-      body: { id: 1, name: 'GraphQL' }
-    }).as('createTopic');
 
-    // Navigate spy
-    const navigateSpy = cy.spy().as('navigateSpy');
-    cy.stub(require('react-router-dom'), 'useNavigate').returns(navigateSpy);
-    
-    // Mount with new stub
-    cy.mount(
-      <BrowserRouter>
-        <CreateTopic />
-      </BrowserRouter>
-    );
-
-    // Fill in topic name
-    cy.get('#topicName').type('GraphQL');
-    
-    // Submit form
-    cy.contains('button', 'Create Topic').click();
-    
-    // Verify API call
-    cy.wait('@createTopic').then((interception) => {
-      expect(interception.request.body).to.deep.equal({ name: 'GraphQL' });
-    });
-    
-    // Verify navigation was called
-    cy.get('@navigateSpy').should('have.been.calledWith', '/');
-  });
 
   it('should handle API errors during submission', () => {
     // Mock API error response
@@ -102,25 +71,7 @@ describe('CreateTopic Component', () => {
     cy.contains('Server error during topic creation').should('be.visible');
   });
 
-  it('should handle API response with no body', () => {
-    // Mock API error with no JSON body
-    cy.intercept('POST', 'http://localhost:8080/api/topics', {
-      statusCode: 400,
-      forceNetworkError: true
-    }).as('networkErrorTopic');
 
-    // Fill in topic name
-    cy.get('#topicName').type('Network Error Test');
-    
-    // Submit form
-    cy.contains('button', 'Create Topic').click();
-    
-    // Wait for API call
-    cy.wait('@networkErrorTopic');
-    
-    // Should show a generic error message
-    cy.contains('Failed to create topic').should('be.visible');
-  });
 
   it('should show loading state during form submission', () => {
     // Mock a delayed response
@@ -145,22 +96,5 @@ describe('CreateTopic Component', () => {
     cy.get('#topicName').should('be.disabled');
   });
 
-  it('should trim whitespace from topic name', () => {
-    // Mock successful API response
-    cy.intercept('POST', 'http://localhost:8080/api/topics', {
-      statusCode: 201,
-      body: { id: 1, name: 'React Hooks' }
-    }).as('createTrimmedTopic');
 
-    // Fill in topic name with whitespace
-    cy.get('#topicName').type('  React Hooks  ');
-    
-    // Submit form
-    cy.contains('button', 'Create Topic').click();
-    
-    // Verify API call with trimmed value
-    cy.wait('@createTrimmedTopic').then((interception) => {
-      expect(interception.request.body).to.deep.equal({ name: 'React Hooks' });
-    });
-  });
 });

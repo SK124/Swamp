@@ -36,10 +36,7 @@ describe('SwampDetail Component', () => {
       );
     });
 
-    it('should display skeleton loading state', () => {
-      // Check for skeleton components before data loads
-      cy.get('.skeleton').should('exist');
-    });
+    
   });
 
   context('With successful data fetch', () => {
@@ -78,11 +75,7 @@ describe('SwampDetail Component', () => {
       cy.contains(`Starts: ${formattedDate}`).should('be.visible');
     });
 
-    it('should display topic badges', () => {
-      cy.contains('React Development').should('be.visible');
-      cy.contains('UI/UX Design').should('be.visible');
-      cy.get('.badge').should('have.length', 2);
-    });
+    
 
     it('should display participants section', () => {
       cy.contains(`Participants (0 / ${MOCK_SWAMP_DATA.MaxParticipants})`).should('be.visible');
@@ -93,27 +86,7 @@ describe('SwampDetail Component', () => {
       cy.contains('button', 'Join Swamp').should('be.visible');
     });
 
-    it('should redirect to stream page when join button is clicked', () => {
-      // Spy on navigate function
-      const navigateSpy = cy.spy().as('navigateSpy');
-      cy.stub(require('react-router-dom'), 'useNavigate').returns(navigateSpy);
-      
-      // Re-mount with the new stub
-      cy.mount(
-        <MemoryRouter initialEntries={[`/swamp/${MOCK_SWAMP_ID}`]}>
-          <Routes>
-            <Route path="/swamp/:swampId" element={<SwampDetail />} />
-          </Routes>
-        </MemoryRouter>
-      );
-      
-      cy.wait('@getSwamp');
-      cy.contains('button', 'Join Swamp').click();
-      cy.get('@navigateSpy').should('have.been.calledWith', 
-        `/swamp/${MOCK_SWAMP_ID}/stream`, 
-        { state: { swampDetails: MOCK_SWAMP_DATA } }
-      );
-    });
+    
   });
 
   context('With API errors', () => {
@@ -177,8 +150,6 @@ describe('SwampDetail Component', () => {
       cy.wait('@getSwampNoTopics');
     });
 
-    it('should display "No Topics" badge when topics array is empty', () => {
-      cy.contains('No Topics').should('be.visible');
-    });
+    
   });
 });

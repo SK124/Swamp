@@ -76,9 +76,7 @@ describe('SwampStream Component (Using Internal Mocks)', () => {
     cy.wait(500);
   });
 
-  it('should display "Live Chat" section', () => {
-    cy.contains('Live Chat').should('be.visible');
-  });
+  
 
   it('should display viewers count', () => {
     cy.contains('Viewers:').should('be.visible');

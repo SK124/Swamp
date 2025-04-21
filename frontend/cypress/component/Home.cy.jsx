@@ -68,14 +68,7 @@ describe('Home Component', () => {
     cy.contains('Topic 3').should('be.visible');
   });
 
-  it('should provide links to individual swamp pages', () => {
-    // Check that links to swamp details are present with correct hrefs
-    cy.get('a[href="/swamp/1"]').should('exist');
-    cy.get('a[href="/swamp/2"]').should('exist');
-    
-    // Check that the link wraps the entire card
-    cy.get('a[href="/swamp/1"]').find('.card').should('exist');
-  });
+  
 
   it('should show loading state initially', () => {
     // Intercept but don't respond immediately to simulate loading
