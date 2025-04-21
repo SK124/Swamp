@@ -20,6 +20,9 @@ const Navbar = () => {
           <Button variant="ghost" asChild>
             <Link to="/create-room">Create Room</Link>
           </Button>
+          <Button variant="ghost" asChild>
+            <Link to="/create-topic">Create Topic</Link>
+          </Button>
 
           
           {currentUser && currentUser.id ? (
