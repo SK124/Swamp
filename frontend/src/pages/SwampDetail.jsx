@@ -153,22 +153,29 @@ const SwampDetail = () => {
             Hosted by Owner ID: {swampDetails.OwnerID} | Starts:{' '}
             {formattedStartTime} | Duration: {swampDetails.Duration} mins
           </CardDescription>
-          <div className="flex flex-wrap gap-2 pt-2">
+          {/* <div className="flex flex-wrap gap-2 pt-2">
             {swampDetails.Topics?.map((topicId) => (
               <Badge key={topicId} variant="secondary">
                 {getTopicName(topicId)}
               </Badge>
             )) || <Badge variant="outline">No Topics</Badge>}
-          </div>
+          </div> */}
+        <div className="flex flex-wrap gap-2 pt-2">
+        {swampDetails.Topic ? (
+        <Badge variant="secondary">{swampDetails.Topic.Name}</Badge>
+        ) : (
+        <Badge variant="outline">No Topic</Badge>
+        )}
+        </div>
         </CardHeader>
-        <CardContent className="space-y-6">
+        {/* <CardContent className="space-y-6">
           <div>
             <h3 className="text-lg font-semibold mb-2">
               Participants (0 / {swampDetails.MaxParticipants})
             </h3>
             <p className="text-sm text-gray-500">Participant list:</p>
           </div>
-        </CardContent>
+        </CardContent> */}
         <CardFooter className="flex flex-col sm:flex-row justify-between gap-2">
           {/* <Button variant="destructive" onClick={handleLeaveSwamp}>
             Leave Swamp
