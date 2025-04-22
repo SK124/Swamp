@@ -42,7 +42,7 @@ describe('Navbar Component (Simple)', () => {
   it('should have a Create Room link styled as a button', () => {
     // --- FIX ---
     // Target the link (<a> tag) directly, not a button element
-    cy.contains('a', 'Create Room') // Find an <a> tag containing the text
+    cy.contains('a', 'Create Swamp') // Find an <a> tag containing the text
       .should('be.visible')
       .and('have.attr', 'href', '/create-room');
     // --- END FIX ---
